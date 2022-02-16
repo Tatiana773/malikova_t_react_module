@@ -14,7 +14,7 @@ export class AddItemModal extends Component{
             color: this.props.item?.color || '',
             name: this.props.item?.name || '',
             type: this.props.item?.type || '',
-
+            category: this.props.item?.category || '',
         }
     }
     render(){

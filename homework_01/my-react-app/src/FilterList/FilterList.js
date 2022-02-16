@@ -20,13 +20,15 @@ export class FilterList extends Component{
             <p>Сортировать по имени:</p>
             <input onChange = {(event) => {this.props.onFilterName(event.target.value)}}/>
             <p>Сортировать по категории:</p>
-            <select onChange = {(event) => {this.props.onFilterCategory(event.target.value)}}>
-                    <option disabled>Зона расстановки</option>
+            <select id = 'category' onChange = {(event) => {this.props.onFilterCategory(event.target.value)}}>
+                    <option selected disabled>Зона расстановки</option>
                     <option>спальня</option>
                     <option>столовая</option>
                     <option>гостинная</option>
                     <option>терасса</option>
+                    <option>-</option>
             </select>
+            <button onClick = {() => {this.props.onClearFilters(document.querySelector('#category').firstChild.selected)}}>Clear</button>
             </div>
         )
     }

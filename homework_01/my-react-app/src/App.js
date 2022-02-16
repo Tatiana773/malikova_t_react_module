@@ -32,6 +32,23 @@ class App extends Component {
           })
         }
         this.onApplyEditItem = (item) => {
+          this.state.isFiltered?
+          this.setState({
+            isAddModalVisible: false,
+            editingItem: null,
+            filteredGoods: this.state.filteredGoods.map((stateItem) => {
+              if (stateItem.id === item.id){
+                return item;
+              }
+              return stateItem;
+            }),
+            goods: this.state.goods.map((stateItem) => {
+              if (stateItem.id === item.id){
+                return item;
+              }
+              return stateItem;
+            }),
+          }) :
           this.setState({
             isAddModalVisible: false,
             editingItem: null,
@@ -45,32 +62,59 @@ class App extends Component {
           
         }
         this.onFilterName = (value) =>{
-          if(value){
+          if(value && value !== '-'){
            this.setState({
             isFiltered: true,
             filteredGoods: [...this.state.goods].filter((item) => item.name.toLowerCase().includes(value.toLowerCase())
           )}
         )
+        }else if(value && value === '-'){
+          this.setState({
+            isFiltered: true,
+            filteredGoods: [...this.state.goods].filter((item) => item.name ==='')
+          })
         }else{
           this.setState({
+            isFiltered: false,
             ...this.state.goods,
           })
         }
         }
         this.onFilterCategory = (value) =>{
-          if(value){
+          if(value && value !== '-'){
             this.setState({
               isFiltered: true,
              filteredGoods: [...this.state.goods].filter((item) => item.category.toLowerCase().includes(value.toLowerCase())
            )}
          )
+         }else if(value && value === '-'){
+          this.setState({
+            isFiltered: true,
+           filteredGoods: [...this.state.goods].filter((item) => item.category === '')
+          })
          }else{
            this.setState({
+             isFiltered: false,
              ...this.state.goods,
            })
          }
         }
+        this.onClearSortFilters = (categoryDisabled) => {
+         if(!categoryDisabled){
+           this.setState({
+              categoryDisabled: 'selected',
+              isFiltered: false,
+            })
+         }
+              
+        }
         this.onDeleteItem = (id) => {
+          this.state.isFiltered?
+          this.setState({
+            filteredGoods: this.state.filteredGoods.filter((item) => item.id !== id),
+            goods: this.state.goods.filter((item) => item.id !== id)
+
+          }) :
           this.setState({
             goods: this.state.goods.filter((item) => item.id !== id)
           })
@@ -155,7 +199,8 @@ class App extends Component {
                   : null}
                   <FilterList 
                   onFilterName = {this.onFilterName}
-                  onFilterCategory = {this.onFilterCategory}/>
+                  onFilterCategory = {this.onFilterCategory}
+                  onClearFilters = {this.onClearSortFilters}/>
                 </div>
         )     
     }
