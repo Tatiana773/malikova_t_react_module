@@ -4,8 +4,8 @@ import PropTypes from 'prop-types';
 
  
 export const AddItemModal = ({ item, onAddItemClick, onEditItemClick, onCloseAddItemModalClick}) => {   
-    const [color, setColor] = useState(item?.color || '');
     const [name, setName] = useState(item?.name || '');
+    const [color, setColor] = useState(item?.color || '');
     const [type, setType] = useState(item?.type || '');
     const [category, setCategory] = useState(item?.category || '');
     
@@ -20,8 +20,8 @@ export const AddItemModal = ({ item, onAddItemClick, onEditItemClick, onCloseAdd
         <div className = "modalForm">
             <form onSubmit = {() => {
                  item?.id ? 
-                 onEditItemClick({color, name, type, category, id: item.id}) :
-                 onAddItemClick(color, name, type, category)}}>
+                 onEditItemClick({name, color, type, category, id: item.id}) :
+                 onAddItemClick(name, color, type, category)}}>
                 <p>Name:</p>
                 <input value = {name} onChange = {onChangeName}/>
                 <p>Color:</p>

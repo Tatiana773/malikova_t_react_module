@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { GoodsList } from './GoodsList/GoodsList';
 import { GoodsListButtons } from './GoodsListButtons/GoodsListButtons';
 import { AddItemModal } from './AddItemModal/AddItemModal';
@@ -8,7 +8,6 @@ import './App.css';
 
 const state = {
   isAddModalVisible: false,
-  isFiltered:false,
   goods: [
     {
       id: uuidv4(),
@@ -66,10 +65,11 @@ const state = {
 const App = () => {
 
   const [isAddModalVisible, setIsAddModalVisible] = useState(state.isAddModalVisible);
-  const [isFiltered, setIsFiltered] = useState(state.isFiltered);
   const [goods, setGoods] = useState(state.goods);
   const [filteredGoods, setFilteredGoods] = useState(state.filteredGoods);
   const [editingItem, setEditingItem] = useState(null);
+  const [filterNameValue, setFilterNameValue] = useState("");
+  const [filterCategoryValue, setFilterCategoryValue] = useState("");
 
   const onAddItem = useCallback((name, color, type, category) =>{
     setIsAddModalVisible(false)
@@ -83,17 +83,7 @@ const App = () => {
       category,
     }
    ])
-   setFilteredGoods(isFiltered? 
-    [...filteredGoods,
-    {
-      id: uuidv4(),
-      name,
-      color,
-      type,
-      category,
-    },
-    ]: null)
-  }, [setIsAddModalVisible, setGoods, goods, filteredGoods, setFilteredGoods, isFiltered])
+  }, [setIsAddModalVisible, setGoods, goods])
 
   const onEditItem = useCallback((id) => {
     const item = goods.find((item) => item.id === id)
@@ -110,44 +100,39 @@ const App = () => {
       }
       return stateItem;
     }))
-     setFilteredGoods(isFiltered? filteredGoods.map((stateItem) => {
-      if (stateItem.id === item.id){
-        return item;
-      }
-      return stateItem;
-    }): null)
-  }, [setIsAddModalVisible, setEditingItem, setGoods, isFiltered, filteredGoods, goods])
+  }, [setIsAddModalVisible, setEditingItem, setGoods, goods])
+
+useEffect(() =>{
+  if(filterNameValue.length || filterCategoryValue.length){
+    let filteredItems = goods;
+    if(filterNameValue.length){
+      setFilteredGoods(filteredItems.filter((item) => item.name.toLowerCase().includes(filterNameValue.toLowerCase())))
+    }
+    if(filterCategoryValue.length){
+      setFilteredGoods(filteredItems.filter((item) => item.category.toLowerCase().includes(filterCategoryValue.toLowerCase())))
+    }
+  }else{
+    setFilteredGoods(null)
+  }
+}, [goods, filterNameValue, filterCategoryValue])
 
   const onFilterName = useCallback((value) =>{
-    if(value && value !== '-'){
-      setIsFiltered(true)
-      setFilteredGoods([...goods].filter((item) => item.name.toLowerCase().includes(value.toLowerCase())))
-    }else if(value && value === '-'){
-        setIsFiltered(true)
-        setFilteredGoods([...goods].filter((item) => item.name ===''))
-    }else{
-        setIsFiltered(false)
-  }}, [setIsFiltered, setFilteredGoods, goods])
+    setFilterNameValue(value)
+  }, [])
 
   const onFilterCategory = useCallback((value) =>{
-    if(value && value !== '-'){
-      setIsFiltered(true)
-      setFilteredGoods([...goods].filter((item) => item.category.toLowerCase().includes(value.toLowerCase())))
-    }else if(value && value === '-'){
-      setIsFiltered(true)
-      setFilteredGoods([...goods].filter((item) => item.category === ''))
-    }else{
-        setIsFiltered(false)
-  }}, [setIsFiltered, setFilteredGoods, goods])
+    setFilterCategoryValue(value)
+  }, [])
 
   const onClearSortFilters = useCallback(() => {
-      setIsFiltered(false)        
-  }, [setIsFiltered])
+    setFilteredGoods(null)
+    setFilterNameValue("")
+    setFilterCategoryValue("")       
+  }, [setFilteredGoods, setFilterNameValue, setFilterCategoryValue])
   
   const onDeleteItem = useCallback((id) => {
     setGoods(goods.filter((item) => item.id !== id))
-    setFilteredGoods(isFiltered?filteredGoods.filter((item) => item.id !== id):null)
-  }, [setGoods, setFilteredGoods, filteredGoods, goods, isFiltered])
+  }, [setGoods, goods])
 
   const onModalClose = useCallback(() => {
     setIsAddModalVisible(false)
@@ -159,7 +144,7 @@ const App = () => {
   return ( 
     <div className = 'app'>
       <GoodsList 
-      goods = {isFiltered? filteredGoods : goods}
+      goods = {filteredGoods || goods}
       onDeleteItem = {onDeleteItem}
       onEditItem = {onEditItem}/>
       <GoodsListButtons onAddClicked = {onAddModalClicked}/>
@@ -172,9 +157,11 @@ const App = () => {
         goods = {goods}/>
         : null}
       <FilterList 
+      filterCategoryValue = {filterCategoryValue}
+      filterValue={filterNameValue}
       onFilterName = {onFilterName}
       onFilterCategory = {onFilterCategory}
-      onClearFilters = {onClearSortFilters}/>
+      onClearAllFilters = {onClearSortFilters}/>
     </div>
   )      
 }
