@@ -1,20 +1,23 @@
-import React, {Component} from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 
-export class GoodsItem extends Component{
-    render(){
+export const GoodsItem = ({item, onDelete, onEdit}) =>{
         return(
         <tr>
-            <td>{this.props.item?.name || "-"}</td>
-            <td>{this.props.item?.color || "-"}</td>
-            <td>{this.props.item?.type || "-"}</td>
-            <td>{this.props.item?.category || "-"}</td>
+            <td>{item?.name || "-"}</td>
+            <td>{item?.color || "-"}</td>
+            <td>{item?.type || "-"}</td>
+            <td>{item?.category || "-"}</td>
             <td>
-                <button onClick={this.props.onDelete}>Delete</button>
+                <button onClick={onDelete}>Delete</button>
             </td>
             <td>
-                <button onClick={this.props.onEdit}>Edit</button>
+                <button onClick={onEdit}>Edit</button>
             </td>
         </tr>
         )
-    }
+}
+GoodsItem.propTypes = {
+    onDelete: PropTypes.func,
+    onEdit: PropTypes.func,
 }

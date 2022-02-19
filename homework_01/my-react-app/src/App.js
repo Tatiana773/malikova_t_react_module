@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { useState, useCallback } from 'react';
 import { GoodsList } from './GoodsList/GoodsList';
 import { GoodsListButtons } from './GoodsListButtons/GoodsListButtons';
 import { AddItemModal } from './AddItemModal/AddItemModal';
@@ -6,204 +6,177 @@ import {v4 as uuidv4} from 'uuid';
 import { FilterList } from './FilterList/FilterList';
 import './App.css';
 
-class App extends Component {
-    constructor(props){
-        super(props);
-        this.onAddItem = ({name, color, type, category}) =>{
-          this.setState({
-            isAddModalVisible: false,
-            goods:[
-            ...this.state.goods,
-            {
-              id: uuidv4(),
-              name,
-              color,
-              type,
-              category,
-            }
-          ]
-        })
-        }
-        this.onEditItem = (id) => {
-          const item = this.state.goods.find((item) => item.id === id)
-          this.setState({
-            isAddModalVisible: true,
-            editingItem: item,
-          })
-        }
-        this.onApplyEditItem = (item) => {
-          this.state.isFiltered?
-          this.setState({
-            isAddModalVisible: false,
-            editingItem: null,
-            filteredGoods: this.state.filteredGoods.map((stateItem) => {
-              if (stateItem.id === item.id){
-                return item;
-              }
-              return stateItem;
-            }),
-            goods: this.state.goods.map((stateItem) => {
-              if (stateItem.id === item.id){
-                return item;
-              }
-              return stateItem;
-            }),
-          }) :
-          this.setState({
-            isAddModalVisible: false,
-            editingItem: null,
-            goods: this.state.goods.map((stateItem) => {
-              if (stateItem.id === item.id){
-                return item;
-              }
-              return stateItem;
-            })
-          })
-          
-        }
-        this.onFilterName = (value) =>{
-          if(value && value !== '-'){
-           this.setState({
-            isFiltered: true,
-            filteredGoods: [...this.state.goods].filter((item) => item.name.toLowerCase().includes(value.toLowerCase())
-          )}
-        )
-        }else if(value && value === '-'){
-          this.setState({
-            isFiltered: true,
-            filteredGoods: [...this.state.goods].filter((item) => item.name ==='')
-          })
-        }else{
-          this.setState({
-            isFiltered: false,
-            ...this.state.goods,
-          })
-        }
-        }
-        this.onFilterCategory = (value) =>{
-          if(value && value !== '-'){
-            this.setState({
-              isFiltered: true,
-             filteredGoods: [...this.state.goods].filter((item) => item.category.toLowerCase().includes(value.toLowerCase())
-           )}
-         )
-         }else if(value && value === '-'){
-          this.setState({
-            isFiltered: true,
-           filteredGoods: [...this.state.goods].filter((item) => item.category === '')
-          })
-         }else{
-           this.setState({
-             isFiltered: false,
-             ...this.state.goods,
-           })
-         }
-        }
-        this.onClearSortFilters = (categoryDisabled) => {
-         if(!categoryDisabled){
-           this.setState({
-              categoryDisabled: 'selected',
-              isFiltered: false,
-            })
-         }
-              
-        }
-        this.onDeleteItem = (id) => {
-          this.state.isFiltered?
-          this.setState({
-            filteredGoods: this.state.filteredGoods.filter((item) => item.id !== id),
-            goods: this.state.goods.filter((item) => item.id !== id)
-
-          }) :
-          this.setState({
-            goods: this.state.goods.filter((item) => item.id !== id)
-          })
-        }
-        this.onModalClose = () => {
-          this.setState({
-            isAddModalVisible: false,
-            editingItem: null,
-          })
-        }
-        this.state = {
-          isAddModalVisible: false,
-          isFiltered:false,
-            goods: [
-                {
-                  id: uuidv4(),
-                  name: 'Стол',
-                  color: 'Белый',
-                  type: 'Прямоугольный',
-                  category: 'столовая',
-                },
-                {
-                  id: uuidv4(),
-                  name: 'Стол',
-                  color: 'Черный',
-                  type: 'Круглый',
-                  category: 'терасса',
-                },
-                {
-                  id: uuidv4(),
-                  name: 'Диван',
-                  color: 'Зеленый',
-                  type: 'двумесный',
-                  category: 'гостинная',
-                },
-                {
-                    id: uuidv4(),
-                    name: 'Диван',
-                    color: 'Синий',
-                    type: 'Трехместный',
-                    category: 'терасса',
-                  },
-                  {
-                    id: uuidv4(),
-                    name: 'Кресло',
-                    color: 'Коричневый',
-                    type: 'Одномесный',
-                    category: 'спальня',
-                  },
-                  {
-                    id: uuidv4(),
-                    name: 'Кресло',
-                    color: 'Белый',
-                    type: 'Одномесный',
-                    category: 'гостинная',
-                  },
-                  {
-                    id: uuidv4(),
-                    name: 'Стул',
-                    color: 'Желтый',
-                    type: 'Мягкий',
-                    category: 'столовая',
-                  }
-                ],
-            filteredGoods: [],
-            }
-        }
-    render() {
-            return ( 
-                <div className = 'app'>
-                  <GoodsList 
-                  goods = {this.state.isFiltered? this.state.filteredGoods : this.state.goods}
-                  onDeleteItem = {this.onDeleteItem}
-                  onEditItem = {this.onEditItem}/>
-                  <GoodsListButtons onAddClicked = {() =>this.setState({isAddModalVisible: true})}/>
-                  {this.state.isAddModalVisible? 
-                  <AddItemModal 
-                  onAddItemClick = {this.onAddItem}
-                  onCloseAddItemModalClick = {this.onModalClose}
-                  onEditItemClick = {this.onApplyEditItem}
-                  item = {this.state.editingItem}/>
-                  : null}
-                  <FilterList 
-                  onFilterName = {this.onFilterName}
-                  onFilterCategory = {this.onFilterCategory}
-                  onClearFilters = {this.onClearSortFilters}/>
-                </div>
-        )     
+const state = {
+  isAddModalVisible: false,
+  isFiltered:false,
+  goods: [
+    {
+      id: uuidv4(),
+      name: 'Стол',
+      color: 'Белый',
+      type: 'Прямоугольный',
+      category: 'столовая',
+    },
+    {
+      id: uuidv4(),
+      name: 'Стол',
+      color: 'Черный',
+      type: 'Круглый',
+      category: 'терасса',
+    },
+    {
+      id: uuidv4(),
+      name: 'Диван',
+      color: 'Зеленый',
+      type: 'двумесный',
+      category: 'гостинная',
+    },
+    {
+      id: uuidv4(),
+      name: 'Диван',
+      color: 'Синий',
+      type: 'Трехместный',
+      category: 'терасса',
+    },
+    {
+      id: uuidv4(),
+      name: 'Кресло',
+      color: 'Коричневый',
+      type: 'Одномесный',
+      category: 'спальня',
+    },
+    {
+      id: uuidv4(),
+      name: 'Кресло',
+      color: 'Белый',
+      type: 'Одномесный',
+      category: 'гостинная',
+    },
+    {
+      id: uuidv4(),
+      name: 'Стул',
+      color: 'Желтый',
+      type: 'Мягкий',
+      category: 'столовая',
     }
+  ],
+  filteredGoods: [],
+}
+
+const App = () => {
+
+  const [isAddModalVisible, setIsAddModalVisible] = useState(state.isAddModalVisible);
+  const [isFiltered, setIsFiltered] = useState(state.isFiltered);
+  const [goods, setGoods] = useState(state.goods);
+  const [filteredGoods, setFilteredGoods] = useState(state.filteredGoods);
+  const [editingItem, setEditingItem] = useState(null);
+
+  const onAddItem = useCallback((name, color, type, category) =>{
+    setIsAddModalVisible(false)
+    setGoods([
+    ...goods,
+    {
+      id: uuidv4(),
+      name,
+      color,
+      type,
+      category,
+    }
+   ])
+   setFilteredGoods(isFiltered? 
+    [...filteredGoods,
+    {
+      id: uuidv4(),
+      name,
+      color,
+      type,
+      category,
+    },
+    ]: null)
+  }, [setIsAddModalVisible, setGoods, goods, filteredGoods, setFilteredGoods, isFiltered])
+
+  const onEditItem = useCallback((id) => {
+    const item = goods.find((item) => item.id === id)
+    setIsAddModalVisible(true)
+    setEditingItem(item)
+  }, [setEditingItem, setIsAddModalVisible, goods])
+  
+  const onApplyEditItem = useCallback((item) => {
+    setIsAddModalVisible(false)
+    setEditingItem(null)
+    setGoods(goods.map((stateItem) => {
+      if (stateItem.id === item.id){
+        return item;
+      }
+      return stateItem;
+    }))
+     setFilteredGoods(isFiltered? filteredGoods.map((stateItem) => {
+      if (stateItem.id === item.id){
+        return item;
+      }
+      return stateItem;
+    }): null)
+  }, [setIsAddModalVisible, setEditingItem, setGoods, isFiltered, filteredGoods, goods])
+
+  const onFilterName = useCallback((value) =>{
+    if(value && value !== '-'){
+      setIsFiltered(true)
+      setFilteredGoods([...goods].filter((item) => item.name.toLowerCase().includes(value.toLowerCase())))
+    }else if(value && value === '-'){
+        setIsFiltered(true)
+        setFilteredGoods([...goods].filter((item) => item.name ===''))
+    }else{
+        setIsFiltered(false)
+  }}, [setIsFiltered, setFilteredGoods, goods])
+
+  const onFilterCategory = useCallback((value) =>{
+    if(value && value !== '-'){
+      setIsFiltered(true)
+      setFilteredGoods([...goods].filter((item) => item.category.toLowerCase().includes(value.toLowerCase())))
+    }else if(value && value === '-'){
+      setIsFiltered(true)
+      setFilteredGoods([...goods].filter((item) => item.category === ''))
+    }else{
+        setIsFiltered(false)
+  }}, [setIsFiltered, setFilteredGoods, goods])
+
+  const onClearSortFilters = useCallback(() => {
+      setIsFiltered(false)        
+  }, [setIsFiltered])
+  
+  const onDeleteItem = useCallback((id) => {
+    setGoods(goods.filter((item) => item.id !== id))
+    setFilteredGoods(isFiltered?filteredGoods.filter((item) => item.id !== id):null)
+  }, [setGoods, setFilteredGoods, filteredGoods, goods, isFiltered])
+
+  const onModalClose = useCallback(() => {
+    setIsAddModalVisible(false)
+    setEditingItem(null)
+  }, [setIsAddModalVisible, setEditingItem])
+
+  const onAddModalClicked = useCallback(() => {setIsAddModalVisible(true)}, [setIsAddModalVisible])
+     
+  return ( 
+    <div className = 'app'>
+      <GoodsList 
+      goods = {isFiltered? filteredGoods : goods}
+      onDeleteItem = {onDeleteItem}
+      onEditItem = {onEditItem}/>
+      <GoodsListButtons onAddClicked = {onAddModalClicked}/>
+      {isAddModalVisible? 
+        <AddItemModal 
+        onAddItemClick = {onAddItem}
+        onCloseAddItemModalClick = {onModalClose}
+        onEditItemClick = {onApplyEditItem}
+        item = {editingItem}
+        goods = {goods}/>
+        : null}
+      <FilterList 
+      onFilterName = {onFilterName}
+      onFilterCategory = {onFilterCategory}
+      onClearFilters = {onClearSortFilters}/>
+    </div>
+  )      
 }
 
 export default App;
