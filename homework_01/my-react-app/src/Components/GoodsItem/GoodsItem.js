@@ -1,7 +1,17 @@
 import React from 'react';
+import { useCallback } from 'react';
+import { useDispatch } from 'react-redux';
+import { deleteItemAction } from '../../Store/items/action';
 import PropTypes from 'prop-types';
 
 export const GoodsItem = ({item, onDelete, onEdit}) =>{
+
+    const dispatch = useDispatch();
+
+    const onDeleteElement = useCallback(
+        (id) => dispatch(deleteItemAction({ id })),
+        [dispatch],
+      )
         return(
         <tr>
             <td>{item?.name || "-"}</td>

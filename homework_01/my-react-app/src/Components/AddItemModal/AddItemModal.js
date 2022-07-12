@@ -1,9 +1,14 @@
 import React, {useState, useCallback} from 'react';
+import { useDispatch } from 'react-redux';
+import { hideAddItemModalAction } from '../../Store/App/action';
 import './AddItemModal.css';
 import PropTypes from 'prop-types';
 
  
-export const AddItemModal = ({ item, onAddItemClick, onEditItemClick, onCloseAddItemModalClick}) => {   
+export const AddItemModal = ({ item, onAddItemClick, onEditItemClick, }) => {   
+    
+    const dispatch = useDispatch();
+
     const [name, setName] = useState(item?.name || '');
     const [color, setColor] = useState(item?.color || '');
     const [type, setType] = useState(item?.type || '');
@@ -14,6 +19,10 @@ export const AddItemModal = ({ item, onAddItemClick, onEditItemClick, onCloseAdd
     const onChangeColor = useCallback((event) => {setColor(event.target.value)}, [setColor]);
     const onChangeType = useCallback((event) => {setType(event.target.value)}, [setType]);
     const onChangeCategory = useCallback((event) => {setCategory(event.target.value)}, [setCategory]);
+
+    const onHideModal = useCallback(() => {
+        dispatch(hideAddItemModalAction())
+      }, [dispatch])
 
 
     return(
@@ -37,7 +46,7 @@ export const AddItemModal = ({ item, onAddItemClick, onEditItemClick, onCloseAdd
                     <option>терасса</option>
                 </select>
                 <button>{item?.id? 'Edit': 'Add'}</button>
-                <button onClick = {onCloseAddItemModalClick}>Close</button>
+                <button onClick = {onHideModal}>Close</button>
             </form>
         </div>
     )

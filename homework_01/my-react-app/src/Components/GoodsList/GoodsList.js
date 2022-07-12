@@ -3,6 +3,7 @@ import { GoodsItem } from '../GoodsItem/GoodsItem';
 import PropTypes from 'prop-types';
 
 export const GoodsList = ({goods, onDeleteItem, onEditItem}) => {
+    
     return(
         <table>
             <tbody>
@@ -11,8 +12,8 @@ export const GoodsList = ({goods, onDeleteItem, onEditItem}) => {
                     <GoodsItem
                         key={item.id}
                         item={item} 
-                        onDelete = {() => onDeleteItem(item.id)}
                         onEdit = {() => onEditItem(item.id)}/>
+                        
                     )
                 })}
             </tbody>

@@ -1,70 +1,21 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import { GoodsList } from './GoodsList/GoodsList';
-import { GoodsListButtons } from './GoodsListButtons/GoodsListButtons';
-import { AddItemModal } from './AddItemModal/AddItemModal';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectItems } from './Store/items/selector';
+import { selectIsAddItemModalVisible} from './Store/App/selector';
+import { GoodsList } from './Components/GoodsList/GoodsList';
+import { GoodsListButtons } from './Components/GoodsListButtons/GoodsListButtons';
+import { AddItemModal } from './Components/AddItemModal/AddItemModal';
 import {v4 as uuidv4} from 'uuid';
-import { FilterList } from './FilterList/FilterList';
+import { FilterList } from './Components/FilterList/FilterList';
 import './App.css';
 
-const state = {
-  isAddModalVisible: false,
-  goods: [
-    {
-      id: uuidv4(),
-      name: 'Стол',
-      color: 'Белый',
-      type: 'Прямоугольный',
-      category: 'столовая',
-    },
-    {
-      id: uuidv4(),
-      name: 'Стол',
-      color: 'Черный',
-      type: 'Круглый',
-      category: 'терасса',
-    },
-    {
-      id: uuidv4(),
-      name: 'Диван',
-      color: 'Зеленый',
-      type: 'двумесный',
-      category: 'гостинная',
-    },
-    {
-      id: uuidv4(),
-      name: 'Диван',
-      color: 'Синий',
-      type: 'Трехместный',
-      category: 'терасса',
-    },
-    {
-      id: uuidv4(),
-      name: 'Кресло',
-      color: 'Коричневый',
-      type: 'Одномесный',
-      category: 'спальня',
-    },
-    {
-      id: uuidv4(),
-      name: 'Кресло',
-      color: 'Белый',
-      type: 'Одномесный',
-      category: 'гостинная',
-    },
-    {
-      id: uuidv4(),
-      name: 'Стул',
-      color: 'Желтый',
-      type: 'Мягкий',
-      category: 'столовая',
-    }
-  ],
-  filteredGoods: [],
-}
 
 const App = () => {
 
-  const [isAddModalVisible, setIsAddModalVisible] = useState(state.isAddModalVisible);
+  const dispatch = useDispatch();
+  const state = useSelector(selectItems);
+
+  const [isAddModalVisible, setIsAddModalVisible] = useState(selectIsAddItemModalVisible);
   const [goods, setGoods] = useState(state.goods);
   const [filteredGoods, setFilteredGoods] = useState(state.filteredGoods);
   const [editingItem, setEditingItem] = useState(null);
@@ -130,39 +81,31 @@ useEffect(() =>{
     setFilterCategoryValue("")       
   }, [setFilteredGoods, setFilterNameValue, setFilterCategoryValue])
   
-  const onDeleteItem = useCallback((id) => {
-    setGoods(goods.filter((item) => item.id !== id))
-  }, [setGoods, goods])
-
-  const onModalClose = useCallback(() => {
-    setIsAddModalVisible(false)
-    setEditingItem(null)
-  }, [setIsAddModalVisible, setEditingItem])
-
   const onAddModalClicked = useCallback(() => {setIsAddModalVisible(true)}, [setIsAddModalVisible])
-     
+  
+  
   return ( 
-    <div className = 'app'>
-      <GoodsList 
-      goods = {filteredGoods || goods}
-      onDeleteItem = {onDeleteItem}
-      onEditItem = {onEditItem}/>
-      <GoodsListButtons onAddClicked = {onAddModalClicked}/>
-      {isAddModalVisible? 
-        <AddItemModal 
-        onAddItemClick = {onAddItem}
-        onCloseAddItemModalClick = {onModalClose}
-        onEditItemClick = {onApplyEditItem}
-        item = {editingItem}
-        goods = {goods}/>
-        : null}
-      <FilterList 
-      filterCategoryValue = {filterCategoryValue}
-      filterValue={filterNameValue}
-      onFilterName = {onFilterName}
-      onFilterCategory = {onFilterCategory}
-      onClearAllFilters = {onClearSortFilters}/>
-    </div>
+   
+      <div className = 'app'>
+        <GoodsList 
+        goods = {filteredGoods || goods}
+        onEditItem = {onEditItem}/>
+        <GoodsListButtons onAddClicked = {onAddModalClicked}/>
+        {isAddModalVisible? 
+          <AddItemModal 
+          onAddItemClick = {onAddItem}
+          onEditItemClick = {onApplyEditItem}
+          item = {editingItem}
+          goods = {goods}/>
+          : null}
+        <FilterList 
+        filterCategoryValue = {filterCategoryValue}
+        filterValue={filterNameValue}
+        onFilterName = {onFilterName}
+        onFilterCategory = {onFilterCategory}
+        onClearAllFilters = {onClearSortFilters}/>
+      </div>
+ 
   )      
 }
 
