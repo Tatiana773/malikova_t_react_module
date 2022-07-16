@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 export const GoodsItem = ({item, onDeleteItem=()=>{}, onEditItem=()=>{}}) =>{
 
     const onDelete = useCallback(()=>onDeleteItem(item.id), [item.id, onDeleteItem]);
-    const onEdit = useCallback(()=>{onEditItem(item.id)}, [onEditItem]);
+    const onEdit = useCallback(()=>{onEditItem(item.id)}, [item.id, onEditItem]);
   
         return(
         <tr>

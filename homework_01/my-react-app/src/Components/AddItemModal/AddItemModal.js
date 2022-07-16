@@ -1,7 +1,6 @@
 import React, {useState, useCallback} from 'react';
-import { selectItems } from '../../Store/items/selector';
+import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from 'react-redux';
-import { hideAddItemModalAction, } from '../../Store/App/action';
 import { selectEditingItem } from '../../Store/App/selector';
 import './AddItemModal.css';
 import PropTypes from 'prop-types';
@@ -13,6 +12,7 @@ export const AddItemModal = () => {
     console.log("item:",item)
     
     const dispatch = useDispatch();
+    const navigate = useNavigate();
 
     const [name, setName] = useState(item?.name || '');
     const [color, setColor] = useState(item?.color || '');
@@ -25,23 +25,24 @@ export const AddItemModal = () => {
     const onChangeType = useCallback((event) => {setType(event.target.value)}, [setType]);
     const onChangeCategory = useCallback((event) => {setCategory(event.target.value)}, [setCategory]);
 
-    const onHideModal = useCallback(() => {
-        dispatch(hideAddItemModalAction())
-      }, [dispatch]);
+    const onGoBack = useCallback(() => {
+        navigate(-1)
+      }, [navigate]);
 
       const onAddItem = useCallback(() =>{
-        onHideModal();
         dispatch(addItemAction({
             name,
             color,
             type,
             category,
         }))
-      }, [dispatch, name, color, type, category]);
+        navigate("/");
+      }, [dispatch, navigate, name, color, type, category]);
 
       const onEditItemClick = useCallback((item) => {
           dispatch(applyEditItemAction(item))
-        }, [ dispatch])
+          navigate("/");
+        }, [ dispatch, navigate])
       
     return(
         <div className = "modalForm">
@@ -64,7 +65,7 @@ export const AddItemModal = () => {
                  item?.id ? 
                  onEditItemClick({name, color, type, category, id: item.id}) :
                  onAddItem()}}>{item?.id? 'Edit': 'Add'}</button>
-                <button onClick = {onHideModal}>Close</button>
+                <button onClick = {onGoBack}>Back</button>
             </div>
         </div>
     )

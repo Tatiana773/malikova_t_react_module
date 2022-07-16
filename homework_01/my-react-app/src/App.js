@@ -1,31 +1,45 @@
-import React, { useState, useCallback, useEffect } from 'react';
-// import { Routes, Route, Link } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
-import { selectItems } from './Store/items/selector';
-import { selectIsAddItemModalVisible } from './Store/App/selector';
+import React from 'react';
+import { Routes, Route, Link } from 'react-router-dom';
 import { GoodsList } from './Components/GoodsList/GoodsList';
-import { GoodsListButtons } from './Components/GoodsListButtons/GoodsListButtons';
 import { AddItemModal } from './Components/AddItemModal/AddItemModal';
-import {v4 as uuidv4} from 'uuid';
 import { FilterList } from './Components/FilterList/FilterList';
+import { PageNotFound } from './Components/PageNotFound/PageNotFound';
 import './App.css';
+
+const styles = {
+  nav: {
+    borderBottom: "solid 1px",
+    paddingBottom: "1rem"
+  },
+  linkItem: {
+    padding: "10px" ,
+    fontSize: "22px",
+    textDecoration: "none",
+  }
+}
 
 
 const App = () => {
 
-  const dispatch = useDispatch();
-
-  const state = useSelector(selectItems);
-  const isAddModalVisible = useSelector(selectIsAddItemModalVisible);
-
   return ( 
+    
       <div className = 'app'>
-        <GoodsList 
-        // goods = {filteredGoods || goods}
-        />
-        <GoodsListButtons />
-        {isAddModalVisible? <AddItemModal/> : null}
-        <FilterList />
+        <nav style={styles.nav}>
+
+        <Link style={styles.linkItem} to="/">List</Link>
+        <Link style={styles.linkItem} to="/add">Add Item</Link>
+        <Link style={styles.linkItem} to="/filter">Find Item</Link>
+      </nav>
+
+        {/* <GoodsListButtons /> */}
+        <Routes>
+          <Route path='/' element={<GoodsList 
+          // goods = {filteredGoods || goods}
+          />}/>
+          <Route path='/add' element={<AddItemModal/>}/>
+          <Route path='/filter' element={<FilterList />}/>
+          <Route path="*" element={<PageNotFound />} />
+        </Routes>
       </div>
   )      
 }

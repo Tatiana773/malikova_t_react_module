@@ -3,7 +3,8 @@ import { GoodsItem } from '../GoodsItem/GoodsItem';
 import { useDispatch, useSelector } from 'react-redux';
 import { deleteItemAction, } from '../../Store/items/action';
 import { selectItems } from '../../Store/items/selector';
-import { showAddItemModalAction, setEditItemAction } from '../../Store/App/action';
+import { useNavigate } from "react-router-dom";
+import { setEditItemAction } from '../../Store/App/action';
 import PropTypes from 'prop-types';
 
 export const GoodsList = () => {
@@ -11,13 +12,15 @@ export const GoodsList = () => {
     console.log("goods:", goods);
 
     const dispatch = useDispatch();
+    const navigate = useNavigate();
 
     const onRemoveItem = useCallback ((id)=>dispatch(deleteItemAction({id})),[dispatch]);
     
     const onEditingItem = useCallback((id) => {
         const item = goods.find((i) => i.id === id);
         dispatch(setEditItemAction(item));
-        }, [goods, dispatch])
+        navigate('/add');
+        }, [goods, dispatch, navigate])
 
     return(
         <table>
