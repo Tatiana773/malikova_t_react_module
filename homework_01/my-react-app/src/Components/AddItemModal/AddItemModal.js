@@ -1,11 +1,16 @@
 import React, {useState, useCallback} from 'react';
-import { useDispatch } from 'react-redux';
-import { hideAddItemModalAction } from '../../Store/App/action';
+import { selectItems } from '../../Store/items/selector';
+import { useDispatch, useSelector } from 'react-redux';
+import { hideAddItemModalAction, } from '../../Store/App/action';
+import { selectEditingItem } from '../../Store/App/selector';
 import './AddItemModal.css';
 import PropTypes from 'prop-types';
+import { addItemAction, applyEditItemAction } from '../../Store/items/action';
 
  
-export const AddItemModal = ({ item, onAddItemClick, onEditItemClick, }) => {   
+export const AddItemModal = () => {   
+    const item = useSelector(selectEditingItem);
+    console.log("item:",item)
     
     const dispatch = useDispatch();
 
@@ -22,15 +27,25 @@ export const AddItemModal = ({ item, onAddItemClick, onEditItemClick, }) => {
 
     const onHideModal = useCallback(() => {
         dispatch(hideAddItemModalAction())
-      }, [dispatch])
+      }, [dispatch]);
 
+      const onAddItem = useCallback(() =>{
+        onHideModal();
+        dispatch(addItemAction({
+            name,
+            color,
+            type,
+            category,
+        }))
+      }, [dispatch, name, color, type, category]);
 
+      const onEditItemClick = useCallback((item) => {
+          dispatch(applyEditItemAction(item))
+        }, [ dispatch])
+      
     return(
         <div className = "modalForm">
-            <form onSubmit = {() => {
-                 item?.id ? 
-                 onEditItemClick({name, color, type, category, id: item.id}) :
-                 onAddItemClick(name, color, type, category)}}>
+            <div>
                 <p>Name:</p>
                 <input value = {name} onChange = {onChangeName}/>
                 <p>Color:</p>
@@ -45,9 +60,12 @@ export const AddItemModal = ({ item, onAddItemClick, onEditItemClick, }) => {
                     <option>гостинная</option>
                     <option>терасса</option>
                 </select>
-                <button>{item?.id? 'Edit': 'Add'}</button>
+                <button onClick = {() => {
+                 item?.id ? 
+                 onEditItemClick({name, color, type, category, id: item.id}) :
+                 onAddItem()}}>{item?.id? 'Edit': 'Add'}</button>
                 <button onClick = {onHideModal}>Close</button>
-            </form>
+            </div>
         </div>
     )
 }
