@@ -1,18 +1,25 @@
 import React from 'react';
 import { useCallback } from 'react';
 import PropTypes from 'prop-types';
-
-export const GoodsItem = ({item, onDeleteItem=()=>{}, onEditItem=()=>{}}) =>{
+import './GoodsItem.css';
+export const GoodsItem = ({item, onDeleteItem=()=>{}, onEditItem=()=>{}, onCategoryClicked=()=>{}, onTitleClicked=()=>{}}) =>{
 
     const onDelete = useCallback(()=>onDeleteItem(item.id), [item.id, onDeleteItem]);
     const onEdit = useCallback(()=>{onEditItem(item.id)}, [item.id, onEditItem]);
+    const onTitleHandler = useCallback(() => {
+        onTitleClicked(item.title)
+      }, [item.title, onTitleClicked]);
+    const onCategoryHandler = useCallback(() => {
+        onCategoryClicked(item.category)
+    }, [item.category, onCategoryClicked]);
   
         return(
         <tr>
-            <td>{item?.name || "-"}</td>
-            <td>{item?.color || "-"}</td>
-            <td>{item?.type || "-"}</td>
-            <td>{item?.category || "-"}</td>
+            <td className='click' onClick={onTitleHandler}>{item?.title || "-"}</td>
+            <td>{item?.description || "-"}</td>
+            <td className='click' onClick={onCategoryHandler}>{item?.category || "-"}</td>
+            <td>{item?.price || "-"}</td>
+            <td>{item?.units || "-"}</td>
             <td>
                 <button onClick={onDelete}>Delete</button>
             </td>

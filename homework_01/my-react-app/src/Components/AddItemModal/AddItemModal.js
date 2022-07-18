@@ -5,6 +5,7 @@ import { selectEditingItem } from '../../Store/App/selector';
 import './AddItemModal.css';
 import PropTypes from 'prop-types';
 import { addItemAction, applyEditItemAction } from '../../Store/items/action';
+import { resetEditItemAction } from '../../Store/App/action';
 
  
 export const AddItemModal = () => {   
@@ -13,58 +14,74 @@ export const AddItemModal = () => {
     
     const dispatch = useDispatch();
     const navigate = useNavigate();
-
-    const [name, setName] = useState(item?.name || '');
-    const [color, setColor] = useState(item?.color || '');
-    const [type, setType] = useState(item?.type || '');
-    const [category, setCategory] = useState(item?.category || '');
+    
+    const [title, setTitle] = useState(item?.title || '');
+    const [description, setDescription] = useState(item?.description || '');
+    const [category, setCategory] = useState(item?.categoryId || '');
+    const [price, setPrice] = useState(item?.price || '');
+    const [units, setUnits] = useState(item?.units || '');
     
 
-    const onChangeName = useCallback((event) => {setName(event.target.value)}, [setName]);
-    const onChangeColor = useCallback((event) => {setColor(event.target.value)}, [setColor]);
-    const onChangeType = useCallback((event) => {setType(event.target.value)}, [setType]);
-    const onChangeCategory = useCallback((event) => {setCategory(event.target.value)}, [setCategory]);
+    const onChangeTitle = useCallback((event) => {setTitle(event.target.value)}, [setTitle]);
+    const onChangeDescription = useCallback((event) => {setDescription(event.target.value)}, [setDescription]);
+    const onChangeCategory = useCallback((event) => {
+        const value = event.target.value;
+        const isStringHasOnlyNumbers = /^\d+$/.test(value);
+        if (isStringHasOnlyNumbers || !value.length) {
+        setCategory(value)}}, [setCategory]);
+
+    const onChangePrice = useCallback((event) => {
+        const value = event.target.value;
+        const isStringHasOnlyNumbers = /^\d+$/.test(value);
+        if (isStringHasOnlyNumbers || !value.length) {
+        setPrice(value);
+    }}, [setPrice]);
+    const onChangeUnits = useCallback((event) => {
+        const value = event.target.value;
+        const isStringHasOnlyNumbers = /^\d+$/.test(value);
+        if (isStringHasOnlyNumbers || !value.length) {
+        setUnits(event.target.value);
+    }}, [setUnits]);
 
     const onGoBack = useCallback(() => {
         navigate(-1)
-      }, [navigate]);
+    }, [navigate]);
 
       const onAddItem = useCallback(() =>{
         dispatch(addItemAction({
-            name,
-            color,
-            type,
+            title,
+            description,
             category,
+            price,
+            units,
         }))
         navigate("/");
-      }, [dispatch, navigate, name, color, type, category]);
+      }, [dispatch, navigate, title, description, category, price, units]);
 
       const onEditItemClick = useCallback((item) => {
           dispatch(applyEditItemAction(item))
+          dispatch(resetEditItemAction());
           navigate("/");
-        }, [ dispatch, navigate])
+        }, [ dispatch, navigate,])
       
     return(
         <div className = "modalForm">
             <div>
-                <p>Name:</p>
-                <input value = {name} onChange = {onChangeName}/>
-                <p>Color:</p>
-                <input value = {color} onChange = {onChangeColor}/>
-                <p>Type:</p>
-                <input value = {type} onChange = {onChangeType}/>
-                <p>Category:</p>
-                <select value = {category} onChange={onChangeCategory}>
-                    <option selected disabled>Зона расстановки</option>
-                    <option>спальня</option>
-                    <option>столовая</option>
-                    <option>гостинная</option>
-                    <option>терасса</option>
-                </select>
+                <p>Назва:</p>
+                <input value = {title} onChange = {onChangeTitle}/>
+                <p>Опис:</p>
+                <input value = {description} onChange = {onChangeDescription}/>
+                <p>Тип:</p>
+                <input value = {category} onChange = {onChangeCategory}/>
+                <p>Ціна:</p>
+                <input value = {price} onChange = {onChangePrice}/>
+                <p>Кількість:</p>
+                <input value = {units} onChange = {onChangeUnits}/>
+                
                 <button onClick = {() => {
                  item?.id ? 
-                 onEditItemClick({name, color, type, category, id: item.id}) :
-                 onAddItem()}}>{item?.id? 'Edit': 'Add'}</button>
+                 onEditItemClick({title, description, category, price, units, id: item.id}) :
+                 onAddItem()}}>{item?.id ? 'Edit': 'Add'}</button>
                 <button onClick = {onGoBack}>Back</button>
             </div>
         </div>

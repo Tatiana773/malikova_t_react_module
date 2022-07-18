@@ -4,26 +4,28 @@ export const ADD_ITEM_ACTION = 'ADD_ITEM_ACTION';
 export const DELETE_ITEM_ACTION = 'DELETE_ITEM_ACTION';
 export const APPLY_EDIT_ACTION = 'APPLY_EDIT_ACTION';
 
-export const addItemAction= ({name, color, type, category}) => {
+export const addItemAction= ({title, description, category, price, units}) => {
     return {
         type: ADD_ITEM_ACTION,
         goods: {
             id: uuidv4(),
-            name,
-            color,
-            type,
+            title,
+            description,
             category,
+            price,
+            units,
         },
     }
 }
-export const applyEditItemAction = ({name, color, type, category, id}) =>{
+export const applyEditItemAction = ({title, description, category, price, units, id}) =>{
     return{
         type: APPLY_EDIT_ACTION,
         goods: {
-            name,
-            color,
-            type,
+            title,
+            description,
             category,
+            price,
+            units,
             id,
         },
     }
@@ -35,4 +37,3 @@ export const deleteItemAction = ({ id }) => {
       id,
     }
   } 
-
