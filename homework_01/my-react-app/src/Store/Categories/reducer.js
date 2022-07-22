@@ -35,7 +35,12 @@ export const categoriesReducer = (state = initialState, action) => {
           }
       }
     case DELETE_CATEGORY_ACTION:
-      return {categories: delete state.categories[action.id]} 
+      return {
+        categories:{
+          ...state.categories,
+          // [action.category.id]: null
+        }
+      };
     case EDIT_CATEGORY_ACTION:
       return {
         categories: {

@@ -1,7 +1,7 @@
 
 import React, { useState, useCallback } from 'react';
 
-export const CategoryItem = ({ cat, onSave = () => {}, onDelete =()=>{} }) => {
+export const CategoryItem = ({ cat, onSave = () => {}, onDelete =()=>{}, }) => {
   const [categoryName, setCategoryName] = useState(cat.name);
 
   const onCategoryNameChange = useCallback((event) => {

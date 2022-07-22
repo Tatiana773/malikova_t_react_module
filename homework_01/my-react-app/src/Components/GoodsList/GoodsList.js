@@ -10,6 +10,7 @@ import PropTypes from 'prop-types';
 
 export const GoodsList = () => {
     const goods = useSelector(selectItems);
+    console.log('goods', goods);
     const categories = useSelector(selectCategories);
     const dispatch = useDispatch();
     const navigate = useNavigate();

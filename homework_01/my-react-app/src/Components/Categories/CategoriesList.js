@@ -15,12 +15,14 @@ export const CategoriesList = () => {
     dispatch(editCategoryAction(category));
   }, [dispatch])
 
-  const onDeleteCat = useCallback ((id)=>{
-      if(goods.categoryId !==id){
-          dispatch(deleteCategoryAction({id}))
-      }else{
-          return categories
-      }},[dispatch, categories, goods.categoryId]);
+  const onDeleteCat = useCallback((id)=>{
+    for(let item of goods){
+      if(item.categoryId !==id){
+        dispatch(deleteCategoryAction({id}))
+    }else{
+      return categories;   
+  }
+  }},[dispatch, categories, goods]);
       
 
   return (
