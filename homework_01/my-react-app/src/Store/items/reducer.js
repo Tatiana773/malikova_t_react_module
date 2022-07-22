@@ -1,79 +1,67 @@
-import { v4 as uuidv4 } from 'uuid';
-import { ADD_ITEM_ACTION, DELETE_ITEM_ACTION, APPLY_EDIT_ACTION,} from './action';
+import { 
+  UPDATE_ITEM_ACTION_REQUEST,
+  UPDATE_ITEM_ACTION_SUCCESS,
+  UPDATE_ITEM_ACTION_FAILURE,
+  FETCH_ITEMS_ACTION_SUCCESS,
+  FETCH_ITEMS_ACTION_REQUEST,
+  FETCH_ITEMS_ACTION_FAILURE,
+  DELETE_ITEM_ACTION_REQUEST,
+  DELETE_ITEM_ACTION_SUCCESS,
+  DELETE_ITEM_ACTION_FAILURE,
+  ADD_ITEM_ACTION_REQUEST,
+  ADD_ITEM_ACTION_SUCCESS,
+  ADD_ITEM_ACTION_FAILURE,
+} from './action';
 
 const initialState = {
-    goods: [
-      {
-        id: uuidv4(),
-        title: 'Стіл',
-        description: 'Білий',
-        categoryId: 0,
-        price: '5000',
-        units: '2',
-      },
-      {
-        id: uuidv4(),
-        title: 'Стіл',
-        description:'Чорнийй',
-        categoryId: 2,
-        price: '6000',
-        units: '3',
-      },
-      {
-        id: uuidv4(),
-        title: 'Софа',
-        description: 'Зелена',
-        categoryId: 1,
-        price: '20000',
-        units: '10',
-      },
-      {
-        id: uuidv4(),
-        title: 'Диван',
-        description: 'Синій',
-        categoryId: 3,
-        price: '25000',
-        units: '1',
-      },
-      {
-        id: uuidv4(),
-        title: 'Крісло',
-        description: 'Коричневе',
-        categoryId: 3,
-        price: '10000',
-        units: '2',
-      },
-      {
-        id: uuidv4(),
-        title: 'Крісло',
-        description: 'Біле',
-        categoryId: 0,
-        price: '7000',
-        units: '4',
-      },
-      {
-        id: uuidv4(),
-        title: 'Стілець',
-        description: 'Жовтий',
-        categoryId: 1,
-        price: '1000',
-        units: '10',
-      }
-    ],
+    goods: [],
+    areItemsLoading: false,
+    error: null,
+    removingItems: {},
+    removingItemsError: {},
+    isAddingItem: false,
+    isAddingItemError: null,
+    isUdatingItem: false,
+    isUpdatingItemError: null,
   }
 
  export const itemsReducer = (state = initialState, action) =>{
    console.log(action.type)
     switch(action.type){
-        case ADD_ITEM_ACTION: return {goods: [...state.goods, action.goods]};
-      
-        case APPLY_EDIT_ACTION: return {goods: state.goods.map((stateItem) => {
-              if (stateItem.id === action.goods.id){
-                return action.goods;
+        case FETCH_ITEMS_ACTION_REQUEST: return{ ...state, areItemsLoading: true, error: null}
+        case FETCH_ITEMS_ACTION_SUCCESS: return {...state, goods: action.items, areItemsLoading: false}
+        case FETCH_ITEMS_ACTION_FAILURE: return {...state, areItemsLoading: false, error: action.error}
+
+        case ADD_ITEM_ACTION_REQUEST: return {...state, isAddingItem: true, isAddingItemError: null, }
+        case ADD_ITEM_ACTION_SUCCESS: return {...state, isAddingItem: false, goods: [...state.goods, action.item] }
+        case ADD_ITEM_ACTION_FAILURE: return {...state, isAddingItem: false, isAddingItemError:true, error: action.error }
+       
+        case UPDATE_ITEM_ACTION_REQUEST: return {...state, isUdatingItem: true, isAddingItemError: null,} 
+        case UPDATE_ITEM_ACTION_SUCCESS: return {
+          ...state, 
+          isUdatingItem: false,
+          goods: state.goods.map((stateItem) => {
+              if (stateItem.id === action.item.id){
+                return action.item;
               }
               return stateItem;
-            })};
-        case DELETE_ITEM_ACTION: return {goods: state.goods.filter((item) => item.id !== action.id)};
+          })};
+        case UPDATE_ITEM_ACTION_FAILURE: return {...state, isUdatingItem: false, isAddingItemError: true, error: action.error}
+       
+        case DELETE_ITEM_ACTION_REQUEST: return {...state, 
+          removingItems: {...state.removingItems, [action.id]: true,},
+          removingItemsError: {...state.removingItemsError, [action.id]: null,}
+        };
+        case DELETE_ITEM_ACTION_SUCCESS: return {...state, 
+          removingItems: {...state.removingItems, [action.id]: false,},
+         goods: state.goods.filter((item)=>item.id !== action.id),
+        };
+        case DELETE_ITEM_ACTION_FAILURE: return {...state, 
+          removingItems: {...state.removingItems, [action.id]: false,},
+          removingItemsError: {...state.removingItemsError, [action.id]: true,
+          error: action.error,}
+        };
+
         default: return state;
     }
   

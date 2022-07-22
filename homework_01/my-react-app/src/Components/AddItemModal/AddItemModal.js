@@ -2,88 +2,106 @@ import React, {useState, useCallback} from 'react';
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from 'react-redux';
 import { selectEditingItem } from '../../Store/App/selector';
+import Box from '@mui/material/Box';
+import TextField from '@mui/material/TextField';
+import Stack from '@mui/material/Stack';
+import Button from '@mui/material/Button';
 import './AddItemModal.css';
 import PropTypes from 'prop-types';
-import { addItemAction, applyEditItemAction } from '../../Store/items/action';
 import { resetEditItemAction } from '../../Store/App/action';
-
+import { addItem, updateItem } from '../../Store/items/thunk';
  
 export const AddItemModal = () => {   
     const item = useSelector(selectEditingItem);
+    
     console.log("item:",item)
     
     const dispatch = useDispatch();
     const navigate = useNavigate();
     
     const [title, setTitle] = useState(item?.title || '');
+    const [weight, setWeight] = useState(item?.weight || '');
     const [description, setDescription] = useState(item?.description || '');
-    const [category, setCategory] = useState(item?.categoryId || '');
-    const [price, setPrice] = useState(item?.price || '');
-    const [units, setUnits] = useState(item?.units || '');
+    const [category, setCategory] = useState(item?.category || '');
     
-
     const onChangeTitle = useCallback((event) => {setTitle(event.target.value)}, [setTitle]);
+
+    const onChangeWeight = useCallback((event) => {
+        const value = event.target.value;
+        const isStringHasOnlyNumbers = /^\d+$/.test(value);
+        if (isStringHasOnlyNumbers || !value.length) {
+        setWeight(value)}}, [setWeight]);
+
     const onChangeDescription = useCallback((event) => {setDescription(event.target.value)}, [setDescription]);
+
     const onChangeCategory = useCallback((event) => {
         const value = event.target.value;
         const isStringHasOnlyNumbers = /^\d+$/.test(value);
         if (isStringHasOnlyNumbers || !value.length) {
         setCategory(value)}}, [setCategory]);
 
-    const onChangePrice = useCallback((event) => {
-        const value = event.target.value;
-        const isStringHasOnlyNumbers = /^\d+$/.test(value);
-        if (isStringHasOnlyNumbers || !value.length) {
-        setPrice(value);
-    }}, [setPrice]);
-    const onChangeUnits = useCallback((event) => {
-        const value = event.target.value;
-        const isStringHasOnlyNumbers = /^\d+$/.test(value);
-        if (isStringHasOnlyNumbers || !value.length) {
-        setUnits(event.target.value);
-    }}, [setUnits]);
-
     const onGoBack = useCallback(() => {
+        dispatch(resetEditItemAction())
         navigate(-1)
     }, [navigate]);
 
       const onAddItem = useCallback(() =>{
-        dispatch(addItemAction({
+        dispatch(addItem({
             title,
+            weight,
             description,
             category,
-            price,
-            units,
         }))
         navigate("/");
-      }, [dispatch, navigate, title, description, category, price, units]);
+      }, [dispatch, navigate, title, weight, description, category, ]);
 
       const onEditItemClick = useCallback((item) => {
-          dispatch(applyEditItemAction(item))
+          dispatch(updateItem(item))
           dispatch(resetEditItemAction());
           navigate("/");
         }, [ dispatch, navigate,])
       
     return(
-        <div className = "modalForm">
-            <div>
-                <p>Назва:</p>
-                <input value = {title} onChange = {onChangeTitle}/>
-                <p>Опис:</p>
-                <input value = {description} onChange = {onChangeDescription}/>
-                <p>Тип:</p>
-                <input value = {category} onChange = {onChangeCategory}/>
-                <p>Ціна:</p>
-                <input value = {price} onChange = {onChangePrice}/>
-                <p>Кількість:</p>
-                <input value = {units} onChange = {onChangeUnits}/>
-                
-                <button onClick = {() => {
-                 item?.id ? 
-                 onEditItemClick({title, description, category, price, units, id: item.id}) :
-                 onAddItem()}}>{item?.id ? 'Edit': 'Add'}</button>
-                <button onClick = {onGoBack}>Back</button>
-            </div>
+        <div >
+            <Box className = "modalForm" component="form" sx={{'& .MuiTextField-root': { m: 1, width: '25ch' },}} noValidate autoComplete="off">
+            <TextField
+                required
+                id="standard-required"
+                label="Required"
+                defaultValue={title}
+                variant="standard"
+                helperText="Name"
+                onChange = {onChangeTitle}/>
+            <TextField
+                required
+                id="standard-required"
+                label="Required"
+                defaultValue={weight}
+                variant="standard"
+                helperText="Weight"
+                onChange = {onChangeWeight}
+                />
+            <TextField
+                id="standard-helperText"
+                defaultValue={description}
+                variant="standard"
+                helperText="Description"
+                onChange = {onChangeDescription}/>
+            <TextField
+                id="standard-helperText"
+                defaultValue={category}
+                variant="standard"
+                helperText="Type"
+                onChange = {onChangeCategory}/>
+                <Stack className='buttons' direction="row" spacing={2}>
+                    <Button size="medium" variant ="outlined" onClick = {() => {
+                        item?.id ? 
+                        onEditItemClick({title, weight, description, category, id: item.id}) :
+                        onAddItem()}}>{item?.id ? 'Edit': 'Add'}
+                    </Button>
+                    <Button size="medium" color ="secondary" variant ="outlined" onClick = {onGoBack}>Back</Button>
+                </Stack>
+            </Box>
         </div>
     )
 }
