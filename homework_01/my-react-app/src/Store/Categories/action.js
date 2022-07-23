@@ -14,9 +14,8 @@ export const addCategoryAction = ({name, id}) => {
 export const deleteCategoryAction = ({id}) =>{
     return{
         type: DELETE_CATEGORY_ACTION,
-        category: {
-            id,
-        }
+        id,
+        
     }
 }
 

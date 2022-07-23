@@ -1,4 +1,4 @@
-import React, {useState, useCallback, useMemo} from 'react';
+import React, {useState, useCallback,} from 'react';
 import Select from 'react-select';
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from 'react-redux';
@@ -13,6 +13,7 @@ import { resetEditItemAction } from '../../Store/App/action';
 export const AddItemModal = () => {   
     const item = useSelector(selectEditingItem);
     const categories = useSelector(selectCategoriesArray);
+    const categoriesList = categories.filter((cat)=> cat !== null);
     console.log('categories', categories)
 
     console.log("item:",item)
@@ -48,26 +49,26 @@ export const AddItemModal = () => {
         navigate(-1)
     }, [navigate]);
 
-      const onAddItem = useCallback(() =>{
-        dispatch(addItemAction({
-            title,
-            description,
-            categoryId,
-            price,
-            units,
-        }))
+    const onAddItem = useCallback(() =>{
+    dispatch(addItemAction({
+        title,
+        description,
+        categoryId,
+        price,
+        units,
+    }))
+    navigate("/");
+    }, [dispatch, navigate, title, description, categoryId, price, units]);
+
+    const onEditItemClick = useCallback((item) => {
+        dispatch(applyEditItemAction(item))
+        dispatch(resetEditItemAction());
         navigate("/");
-      }, [dispatch, navigate, title, description, categoryId, price, units]);
+    }, [ dispatch, navigate,])
 
-      const onEditItemClick = useCallback((item) => {
-          dispatch(applyEditItemAction(item))
-          dispatch(resetEditItemAction());
-          navigate("/");
-        }, [ dispatch, navigate,])
-
-        const options = categories.map((i) =>{
-            return { value: i.id, label: i.name }
-        });
+    const options = categoriesList.map((i) =>{
+        return { value: i.id, label: i.name }
+    });
           console.log("options", options)
     return(
         <div className = "modalForm">

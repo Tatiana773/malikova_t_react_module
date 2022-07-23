@@ -38,8 +38,9 @@ export const categoriesReducer = (state = initialState, action) => {
       return {
         categories:{
           ...state.categories,
-          // [action.category.id]: null
+          [action.id]: null,
         }
+        
       };
     case EDIT_CATEGORY_ACTION:
       return {

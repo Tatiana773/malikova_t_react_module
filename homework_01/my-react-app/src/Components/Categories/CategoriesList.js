@@ -8,27 +8,29 @@ import { CategoryItem} from './CategoryItem';
 
 export const CategoriesList = () => {
   const categories = useSelector(selectCategoriesArray);
+  const categoriesList = categories.filter((cat)=> cat !== null);
   const goods = useSelector(selectItems);
   const dispatch = useDispatch();
+
 
   const onSaveCategory = useCallback((category) => {
     dispatch(editCategoryAction(category));
   }, [dispatch])
 
   const onDeleteCat = useCallback((id)=>{
-    for(let item of goods){
-      if(item.categoryId !==id){
-        dispatch(deleteCategoryAction({id}))
+    const usedCategory = goods.find((item) => item.categoryId === id);
+    if(!usedCategory){
+       dispatch(deleteCategoryAction({id}))
     }else{
-      return categories;   
-  }
-  }},[dispatch, categories, goods]);
+      return categoriesList
+    }
+  },[dispatch, categoriesList, goods]);
       
 
   return (
     <table>
       <tbody>
-        {categories.map((cat) => {
+        {categoriesList.map((cat) => {
           return (
             <CategoryItem key={cat.id} cat={cat} onSave={onSaveCategory} onDelete={onDeleteCat}/>
           )
